@@ -132,7 +132,7 @@ namespace ProjectFileTools.NuGetSearch.Feeds.Web
         {
             List<string> endpoints = new List<string>();
 
-            JArray resourcesArray = document["resources"] as JArray;
+            JArray resourcesArray = document == null? null : document["resources"] as JArray;
 
             if (resourcesArray == null)
             {
@@ -188,16 +188,19 @@ namespace ProjectFileTools.NuGetSearch.Feeds.Web
             Func<string, string> queryFunc = x => $"{x}?q={prefix}{frameworkQuery}&take={queryConfiguration.MaxResults}&prerelease={queryConfiguration.IncludePreRelease}";
             JObject document = await ExecuteAutocompleteServiceQueryAsync(serviceEndpoints, queryFunc, cancellationToken).ConfigureAwait(false);
 
-            try
+            if (document != null)
             {
-                results = GetDataFromNuGetV3CompatibleQueryResult(document);
-            }
-            catch
-            {
-                return PackageNameSearchResult.Failure;
+                try
+                {
+                    results = GetDataFromNuGetV3CompatibleQueryResult(document);
+                    return new PackageNameSearchResult(results, _kind);
+                }
+                catch
+                {
+                }
             }
 
-            return new PackageNameSearchResult(results, _kind);
+            return PackageNameSearchResult.Failure;
         }
 
         public async Task<IPackageInfo> GetPackageInfoAsync(string packageId, string version, IPackageQueryConfiguration queryConfiguration, CancellationToken cancellationToken)
