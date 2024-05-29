@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 
@@ -7,18 +9,18 @@ namespace ProjectFileTools.NuGetSearch.Contracts
     {
         public static IReadOnlyList<PackageType> DefaultList { get; } = new[] { KnownPackageType.Dependency };
 
-        public PackageType(string id, string version = null)
+        public PackageType(string id, string? version = null)
         {
             Name = id ?? throw new ArgumentNullException(nameof(id));
             Version = version;
         }
         public string Name { get; }
-        public string Version { get; }
+        public string? Version { get; }
 
 
-        public override bool Equals(object obj) => Equals(obj as PackageType);
+        public override bool Equals(object? obj) => Equals(obj as PackageType);
 
-        public bool Equals(PackageType other) => other is PackageType
+        public bool Equals(PackageType? other) => other is PackageType
             && string.Equals(Name, other.Name, StringComparison.Ordinal)
             && string.Equals(Version, other.Version, StringComparison.Ordinal);
 
